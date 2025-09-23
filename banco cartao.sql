@@ -110,7 +110,7 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	select * from cantina;
 
 	insert into cantina(nome,comida,tipo,cnpj) VALUES
-	('comidinhas da joelma','bolo de fubá','1',')
+	('comidinhas da joelma','bolo de fubá','1')
 	
 	create table estacionamento (
 	quantidade_vagas INT NOT NULL,
@@ -141,11 +141,19 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	drop table cartao;
 
 
+    UPDATE estabelecimento
+    SET preço = 15.99
+    WHERE id_desconto = 20;
+
+
+
+
 
 
 
 	
 
 	
+
 
 
