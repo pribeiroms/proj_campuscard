@@ -91,43 +91,54 @@ CREATE SCHEMA IF NOT EXISTS flexcard
     nome VARCHAR(100) NOT NULL,
     hora_abertura TIME NOT NULL,
     hora_fechamento TIME NOT NULL,
-    tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('cantina', 'estacionamento')),
-	);
+    tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('cantina', 'estacionamento')));
 
 	select * from estabelecimento
 
 
 	INSERT INTO estabelecimento (nome, hora_abertura, hora_fechamento, tipo) VALUES 
-('Cantina Central', '07:45', '22:00', 'cantina'),
-('Cantina Norte', '07:45', '22:00', 'cantina',
-('Estacionamento Principal', '07:45', '22:00', 'estacionamento'),
-('Estacionamento Visitantes', '07:45', '22:00', 'estacionamento');
+('Cantina Comidinhas da Joelma', '07:45', '22:00', 'cantina'),
+('Cantina Lanche do bom', '07:45', '22:00', 'cantina'),
+('Estacionamento Principal', '07:45', '22:00', 'estacionamento')
 
 
 
 	CREATE TABLE cantina (
     id_estabelecimento INT PRIMARY KEY REFERENCES estabelecimento(id_estabelecimento),
     comida VARCHAR(50) NOT NULL,
-    cnpj VARCHAR(14) UNIQUE NOT NULL
+    cnpj VARCHAR(14) UNIQUE NOT NULL,
 	preco_base DECIMAL(5,2) NOT NULL
 );
 
 	select * from cantina;
 
-	insert into cantina(nome,comida,tipo,cnpj) VALUES
-	('comidinhas da joelma','bolo de fubá','1')
-	
+	INSERT INTO cantina (id_estabelecimento, comida, cnpj,preco_base) VALUES 
+    (1, 'Bolo de Fubá', '12345678000195','15.99'),
+    (2, 'Sanduíche Natural', '98765432000187','25.99');
+
+
 	CREATE TABLE estacionamento (
     id_estabelecimento INT PRIMARY KEY REFERENCES estabelecimento(id_estabelecimento),
     quantidade_vagas INT NOT NULL,
-    hora_entrada TIME,
-    hora_saida TIME
-	);
+    preco_base DECIMAL(5,2) NOT NULL);
 
-	
 	select * from estacionamento;
 
-	insert into estacionamento(quantidade_vagas,hora_entrada,hora_saida,tipo,id_estacionamento)
+	INSERT INTO estacionamento (id_estabelecimento, quantidade_vagas, preco_base) VALUES 
+    (3, 100, 5.00);
+
+	CREATE TABLE estacionamento_uso (
+    id_uso SERIAL PRIMARY KEY,
+    id_estabelecimento INT REFERENCES estacionamento(id_estabelecimento),
+    matricula VARCHAR(10) REFERENCES cartao_aluno(matricula),
+    hora_entrada TIMESTAMP NOT NULL,
+    hora_saida TIMESTAMP,
+    valor_pago DECIMAL(5,2));
+
+	INSERT INTO estacionamento_uso (id_estabelecimento, matricula, hora_entrada, hora_saida,valor_pago) VALUES 
+	(3, '2412130165', '2025-03-20 08:00:00', '2025-03-20 12:00:00','5.00');
+
+	select * from estacionamento_uso;
 
 
 	CREATE TABLE estabelecimento_desconto (
@@ -137,6 +148,19 @@ CREATE SCHEMA IF NOT EXISTS flexcard
     PRIMARY KEY (id_estabelecimento, id_desconto)
 );
 
+    INSERT INTO estabelecimento_desconto (id_estabelecimento, id_desconto) VALUES 
+    (1, 2), (1, 1), (3, 5), (4, 4);
+
+
+	CREATE TABLE compra_cantina (
+    id_compra SERIAL PRIMARY KEY,
+    id_estabelecimento INT REFERENCES cantina(id_estabelecimento),
+    matricula VARCHAR(10) REFERENCES cartao_aluno(matricula),
+    item_comprado VARCHAR(50) NOT NULL,
+    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    valor_pago DECIMAL(5,2),
+    id_desconto_aplicado INT REFERENCES desconto(id_desconto)
+);
 
 
 
@@ -144,19 +168,52 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 
 
 
-    drop table cartao_aluno;
-	drop table sala_estudo;
-	drop table emprestimo;
-	drop table catraca;
-	drop table desconto;
+
+    drop table IF EXISTS cartao_aluno CASCADE;
+	drop table IF EXISTS sala_estudo CASCADE;
+	drop table IF EXISTS emprestimo CASCADE;
+	drop table IF EXISTS catraca CASCADE;
+	drop table IF EXISTS desconto CASCADE;
 	DROP TABLE IF EXISTS cantina CASCADE;
+	DROP TABLE IF EXISTS compra_cantina CASCADE;
 DROP TABLE IF EXISTS estacionamento CASCADE;
+DROP TABLE IF EXISTS estacionamento_uso CASCADE;
 DROP TABLE IF EXISTS estabelecimento CASCADE;
+DROP TABLE IF EXISTS estabelecimento_desconto CASCADE;
 
 
     UPDATE estabelecimento
     SET preço = 15.99
     WHERE id_desconto = 20;
+
+
+
+	SELECT 
+    ca.nome AS aluno,
+    ca.matricula,
+    d.percentual_desconto || '%' AS desconto,
+    e.nome AS estabelecimento,
+    e.tipo
+FROM cartao_aluno ca
+JOIN desconto d ON ca.matricula = d.matricula
+JOIN estabelecimento_desconto ed ON d.id_desconto = ed.id_desconto
+JOIN estabelecimento e ON ed.id_estabelecimento = e.id_estabelecimento;
+
+-- Consulta 2: Histórico de uso do Aluisio com descontos aplicados
+SELECT 
+    ca.nome AS aluno,
+    ue.hora_entrada,
+    ue.hora_saida,
+    e.nome AS estacionamento,
+    ue.valor_original,
+    ue.valor_com_desconto,
+    d.percentual_desconto || '%' AS desconto_aplicado
+FROM uso_estacionamento ue
+JOIN cartao_aluno ca ON ue.matricula = ca.matricula
+JOIN estacionamento es ON ue.id_estabelecimento = es.id_estabelecimento
+JOIN estabelecimento e ON es.id_estabelecimento = e.id_estabelecimento
+JOIN desconto d ON ue.id_desconto_aplicado = d.id_desconto
+WHERE ca.matricula = '2412130165';
 
 
 
