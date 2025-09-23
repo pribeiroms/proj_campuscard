@@ -89,21 +89,28 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	create table estabelecimento (
 	hora_abertura TIME NOT NULL,
 	hora_fechamento TIME NOT NULL,
-	preço INT NOT NULL,
 	tipo INT PRIMARY KEY,
+	preço DECIMAL (5, 2) NOT NULL,
 	id_desconto SERIAL REFERENCES desconto(id_desconto));
 
 	select * from estabelecimento;
 
-	insert into estabelecimento(hora_abertura,hora_fechamento,preço) VALUES 
-	('7:45','22:00',)
+	insert into estabelecimento(hora_abertura,hora_fechamento,tipo,preço,id_desconto) VALUES 
+	('7:45','22:00','1','7.50','15'),
+	('7:45','22:00','1','12.00','20'),
+	('7:45','22:00','2','2.75','10'),
+	('7:45','22:00','3','36.20','50')
 
 	create table cantina (
-	comida VARCHAR(50),
+	nome VARCHAR (50) NOT NULL,
+	comida VARCHAR(50) NOT NULL,
 	tipo INT REFERENCES estabelecimento(tipo),
-	id_cantina INT PRIMARY KEY);
+	cnpj VARCHAR(14) PRIMARY KEY);
 
 	select * from cantina;
+
+	insert into cantina(nome,comida,tipo,cnpj) VALUES
+	('comidinhas da joelma','bolo de fubá','1',')
 	
 	create table estacionamento (
 	quantidade_vagas INT NOT NULL,
@@ -114,6 +121,7 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 
 	select * from estacionamento;
 
+	insert into estacionamento(quantidade_vagas,hora_entrada,hora_saida,tipo,id_estacionamento)
 
 
 
@@ -139,4 +147,5 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	
 
 	
+
 
