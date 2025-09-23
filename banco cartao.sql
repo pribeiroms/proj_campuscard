@@ -15,12 +15,12 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 
 	select * from cartao_aluno;
 
-	insert into cartao_aluno(nome,matricula,cpf) values
-	('Aluisio Veloso Silva Carvalho','2412130165','12345678912'),
-	('Miguel Ferreira Pedroso','2412130072','23456789123'),
-	('Paula Ribeiro Moreira de Souza','2412130037','34567891234'),
-	('Joao Enrique Oliveira Souza','2412130084','45678912345'),
-	('Pedro Arthur Silva Marques','2422130049','56789123456')
+	insert into cartao_aluno(nome,matricula,cpf,data_emissao,data_validade) values
+	('Aluisio Veloso Silva Carvalho','2412130165','12345678912','01/01/20','02/02/20'),
+	('Miguel Ferreira Pedroso','2412130072','23456789123','02/02/21','03/03/21'),
+	('Paula Ribeiro Moreira de Souza','2412130037','34567891234','03/03/22','04/04/22'),
+	('Joao Enrique Oliveira Souza','2412130084','45678912345','04/04/23','05/05/23'),
+	('Pedro Arthur Silva Marques','2422130049','56789123456','05/05/24','06/06/24')
 
 
 	create table sala_estudo (
@@ -56,13 +56,14 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	create table cantina (
 	comida VARCHAR(50),
 	tipo INT REFERENCES estabelecimento(tipo),
-	id_cantina INT PRIMARY KEY);
+	id_cantina SERIAL PRIMARY KEY);
 	
 	create table estacionamento (
 	quantidade_vagas INT NOT NULL,
 	hora_entrada TIME,
 	hora_saida TIME,
-	tipo INT REFERENCES estabelecimento(tipo));
+	tipo INT REFERENCES estabelecimento(tipo),
+	id_estacionamento SERIAL PRIMARY KEY);
 
 
 
@@ -77,6 +78,8 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	drop table emprestimo;
 	drop table catraca;
 	drop table desconto;
+	drop table estabelecimento
+	drop table cantina;
 	drop table estacionamento;
 	drop table cartao;
 
