@@ -135,8 +135,12 @@ CREATE SCHEMA IF NOT EXISTS flexcard
     hora_saida TIMESTAMP,
     valor_pago DECIMAL(5,2));
 
-	INSERT INTO estacionamento_uso (id_estabelecimento, matricula, hora_entrada, hora_saida,valor_pago) VALUES 
-	(3, '2412130165', '2025-03-20 08:00:00', '2025-03-20 12:00:00','5.00');
+	INSERT INTO estacionamento_uso (id_estabelecimento, matricula, hora_entrada, hora_saida, valor_pago) VALUES
+(3, '2412130165', '2025-03-20 08:00:00', '2025-03-20 12:00:00', '5.00'),
+(3, '2412130072', '2025-03-20 09:15:00', '2025-03-20 14:30:00', '5.00'), 
+(3, '2412130037', '2025-03-21 07:45:00', '2025-03-21 16:20:00', '5.00'), 
+(3, '2412130084', '2025-03-21 10:00:00', '2025-03-21 18:00:00', '5.00'), 
+(3, '2422130049', '2025-03-22 08:30:00', '2025-03-22 15:45:00', '5.00');  
 
 	select * from estacionamento_uso;
 
@@ -145,11 +149,12 @@ CREATE SCHEMA IF NOT EXISTS flexcard
     id_estabelecimento INT REFERENCES estabelecimento(id_estabelecimento),
     id_desconto INT REFERENCES desconto(id_desconto),
     data_aplicacao DATE DEFAULT CURRENT_DATE,
-    PRIMARY KEY (id_estabelecimento, id_desconto)
-);
+    PRIMARY KEY (id_estabelecimento, id_desconto));
 
     INSERT INTO estabelecimento_desconto (id_estabelecimento, id_desconto) VALUES 
-    (1, 2), (1, 1), (3, 5), (4, 4);
+    (1, 1), (1, 2), (2, 5), (3, 3), (3, 4);
+
+	select * from estabelecimento_desconto;
 
 
 	CREATE TABLE compra_cantina (
@@ -159,8 +164,16 @@ CREATE SCHEMA IF NOT EXISTS flexcard
     item_comprado VARCHAR(50) NOT NULL,
     data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     valor_pago DECIMAL(5,2),
-    id_desconto_aplicado INT REFERENCES desconto(id_desconto)
-);
+    id_desconto_aplicado INT REFERENCES desconto(id_desconto));
+
+	INSERT INTO compra_cantina (id_estabelecimento, matricula, item_comprado, data_hora, valor_pago, id_desconto_aplicado) VALUES
+    (1, '2412130165', 'Bolo de Fubá', '2025-03-20 08:30:00', 12.79, 1),
+    (1, '2412130072', 'Bolo de Fubá', '2025-03-20 10:15:00', 13.59, 2), 
+    (1, '2412130037', 'Bolo de Fubá', '2025-03-20 12:45:00', 14.39, 5),
+    (2, '2412130084', 'Sanduíche Natural', '2025-03-21 11:20:00', 23.39, 5),
+    (2, '2422130049', 'Sanduíche Natural', '2025-03-21 13:30:00', 12.99, 3);
+
+    select * from compra_cantina;
 
 
 
@@ -182,38 +195,33 @@ DROP TABLE IF EXISTS estabelecimento CASCADE;
 DROP TABLE IF EXISTS estabelecimento_desconto CASCADE;
 
 
-    UPDATE estabelecimento
-    SET preço = 15.99
-    WHERE id_desconto = 20;
+    UPDATE estacionamento_uso SET valor_pago = 1 WHERE id_uso = 1;
 
 
 
 	SELECT 
-    ca.nome AS aluno,
-    ca.matricula,
-    d.percentual_desconto || '%' AS desconto,
     e.nome AS estabelecimento,
-    e.tipo
-FROM cartao_aluno ca
-JOIN desconto d ON ca.matricula = d.matricula
-JOIN estabelecimento_desconto ed ON d.id_desconto = ed.id_desconto
-JOIN estabelecimento e ON ed.id_estabelecimento = e.id_estabelecimento;
+    e.tipo,
+    d.percentual_desconto,
+    ca.nome AS aluno_beneficiario
+FROM estabelecimento e
+JOIN estabelecimento_desconto ed ON e.id_estabelecimento = ed.id_estabelecimento
+JOIN desconto d ON ed.id_desconto = d.id_desconto
+JOIN cartao_aluno ca ON d.matricula = ca.matricula;
 
--- Consulta 2: Histórico de uso do Aluisio com descontos aplicados
+-- Verificar usos de estacionamento com descontos aplicados
 SELECT 
     ca.nome AS aluno,
-    ue.hora_entrada,
-    ue.hora_saida,
     e.nome AS estacionamento,
-    ue.valor_original,
-    ue.valor_com_desconto,
+    eu.hora_entrada,
+    eu.hora_saida,
+    eu.valor_pago,
     d.percentual_desconto || '%' AS desconto_aplicado
-FROM uso_estacionamento ue
-JOIN cartao_aluno ca ON ue.matricula = ca.matricula
-JOIN estacionamento es ON ue.id_estabelecimento = es.id_estabelecimento
-JOIN estabelecimento e ON es.id_estabelecimento = e.id_estabelecimento
-JOIN desconto d ON ue.id_desconto_aplicado = d.id_desconto
-WHERE ca.matricula = '2412130165';
+FROM estacionamento_uso eu
+JOIN cartao_aluno ca ON eu.matricula = ca.matricula
+JOIN estacionamento est ON eu.id_estabelecimento = est.id_estabelecimento
+JOIN estabelecimento e ON est.id_estabelecimento = e.id_estabelecimento
+LEFT JOIN desconto d ON eu.id_desconto_aplicado = d.id_desconto;
 
 
 
