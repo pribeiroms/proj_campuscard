@@ -22,8 +22,6 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	('Joao Enrique Oliveira Souza','2412130084','45678912345','04/04/23','05/05/23'),
 	('Pedro Arthur Silva Marques','2422130049','56789123456','05/05/24','06/06/24')
 
--- add data em sala de estudos?
-
 	create table sala_estudo (
 	id_sala SERIAL PRIMARY KEY,
 	hora_entrada time NOT NULL,
@@ -56,24 +54,21 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	('04/04/23','05/05/23','2412130084'),
 	('05/05/24','06/06/24','2422130049')
 
-
-	
--- data na catraca?
 	create table catraca(
 	id_catraca SERIAL PRIMARY KEY,
 	hora_entrada TIME NOT NULL,
 	hora_saida TIME,
-	data_presença DATE,
+	data_presença DATE NOT NULL,
 	matricula VARCHAR (10) REFERENCES cartao_aluno(matricula));
 
 	select * from catraca;
 
 	insert into catraca(hora_entrada,hora_saida,data_presença,matricula) VALUES
-	('8:15','11:30','2412130165'),
-	('8:15','11:30','2412130072'),
-	('8:15','11:30','2412130037'),
-	('8:15','11:30','2412130084'),
-	('8:15','11:30','2422130049')
+	('8:15','11:30','20/04/25','2412130165'),
+	('8:15','11:30','21/04/25','2412130072'),
+	('8:15','11:30','22/04/25','2412130037'),
+	('8:15','11:30','23/04/25','2412130084'),
+	('8:15','11:30','24/04/25','2422130049')
 	
 
 	create table desconto (
@@ -107,6 +102,8 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	comida VARCHAR(50),
 	tipo INT REFERENCES estabelecimento(tipo),
 	id_cantina INT PRIMARY KEY);
+
+	select * from cantina;
 	
 	create table estacionamento (
 	quantidade_vagas INT NOT NULL,
@@ -114,6 +111,8 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	hora_saida TIME,
 	tipo INT REFERENCES estabelecimento(tipo),
 	id_estacionamento INT PRIMARY KEY);
+
+	select * from estacionamento;
 
 
 
@@ -140,3 +139,4 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	
 
 	
+
