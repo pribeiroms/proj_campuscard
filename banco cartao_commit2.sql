@@ -97,11 +97,11 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	select * from estabelecimento
 
 
-	INSERT INTO estabelecimento (nome, hora_abertura, hora_fechamento, tipo, preco_base) VALUES 
-('Cantina Central', '07:45', '22:00', 'cantina', 2.75),
-('Cantina Norte', '07:45', '22:00', 'cantina', 3.50),
-('Estacionamento Principal', '07:45', '22:00', 'estacionamento', 7.50),
-('Estacionamento Visitantes', '07:45', '22:00', 'estacionamento', 12.00);
+	INSERT INTO estabelecimento (nome, hora_abertura, hora_fechamento, tipo) VALUES 
+('Cantina Central', '07:45', '22:00', 'cantina'),
+('Cantina Norte', '07:45', '22:00', 'cantina',
+('Estacionamento Principal', '07:45', '22:00', 'estacionamento'),
+('Estacionamento Visitantes', '07:45', '22:00', 'estacionamento');
 
 
 
