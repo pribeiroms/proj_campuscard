@@ -26,39 +26,70 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 
 	create table sala_estudo (
 	id_sala SERIAL PRIMARY KEY,
-	hora_entrada time,
-	hora_saida time,
+	hora_entrada time NOT NULL,
+	hora_saida time NOT NULL,
+	data_reserva DATE NOT NULL,
 	matricula VARCHAR (10) REFERENCES cartao_aluno(matricula));
 
 	select * from sala_estudo;
 
-	insert into sala_estudo(hora_entrada,hora_saida,matricula) VALUES
+	insert into sala_estudo(hora_entrada,hora_saida,data_reserva,matricula) VALUES
 	('01:00','02:00','2412130165'),
 	('20:00','21:00','2412130072'),
 	('04:00','05:00','2412130037'),
 	('15:00','16:00','2412130084'),
 	('19:00','22:00','2422130049')
+	
 
 	create table emprestimo (
 	id_livro SERIAL PRIMARY KEY,
-	data_emprestimo DATE,
-	data_devoluçao DATE,
+	data_emprestimo DATE NOT NULL,
+	data_devoluçao DATE NOT NULL,
 	matricula VARCHAR (10) REFERENCES cartao_aluno(matricula));
 
 	select * from emprestimo;
 
-	insert into
+	insert into emprestimo(data_emprestimo,data_devoluçao,matricula) VALUES
+	('01/01/20','02/02/20','2412130165'),
+	('02/02/21','03/03/21','2412130072'),
+	('03/03/22','04/04/22','2412130037'),
+	('04/04/23','05/05/23','2412130084'),
+	('05/05/24','06/06/24','2422130049')
 
+
+	
+-- data na catraca?
 	create table catraca(
 	id_catraca SERIAL PRIMARY KEY,
-	hora_entrada TIME,
+	hora_entrada TIME NOT NULL,
 	hora_saida TIME,
+	data_presença DATE,
 	matricula VARCHAR (10) REFERENCES cartao_aluno(matricula));
+
+	select * from catraca;
+
+	insert into catraca(hora_entrada,hora_saida,data_presença,matricula) VALUES
+	('8:15','11:30','2412130165'),
+	('8:15','11:30','2412130072'),
+	('8:15','11:30','2412130037'),
+	('8:15','11:30','2412130084'),
+	('8:15','11:30','2422130049')
+	
 
 	create table desconto (
 	id_desconto SERIAL PRIMARY KEY,
 	percentual_desconto DECIMAL (4, 2) NOT NULL,
 	matricula VARCHAR (10) REFERENCES cartao_aluno(matricula));
+
+	select * from desconto;
+
+	insert into desconto(percentual_desconto,matricula) VALUES
+	('20','2412130165'),
+	('15','2412130072'),
+	('30','2422130049'),
+	('50','2412130165'),
+	('10','2412130037')
+	
 
 	create table estabelecimento (
 	hora_abertura TIME NOT NULL,
@@ -67,17 +98,22 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	tipo INT PRIMARY KEY,
 	id_desconto SERIAL REFERENCES desconto(id_desconto));
 
+	select * from estabelecimento;
+
+	insert into estabelecimento(hora_abertura,hora_fechamento,preço) VALUES 
+	('7:45','22:00',)
+
 	create table cantina (
 	comida VARCHAR(50),
 	tipo INT REFERENCES estabelecimento(tipo),
-	id_cantina SERIAL PRIMARY KEY);
+	id_cantina INT PRIMARY KEY);
 	
 	create table estacionamento (
 	quantidade_vagas INT NOT NULL,
-	hora_entrada TIME,
+	hora_entrada TIME NOT NULL,
 	hora_saida TIME,
 	tipo INT REFERENCES estabelecimento(tipo),
-	id_estacionamento SERIAL PRIMARY KEY);
+	id_estacionamento INT PRIMARY KEY);
 
 
 
@@ -92,7 +128,7 @@ CREATE SCHEMA IF NOT EXISTS flexcard
 	drop table emprestimo;
 	drop table catraca;
 	drop table desconto;
-	drop table estabelecimento
+	drop table estabelecimento;
 	drop table cantina;
 	drop table estacionamento;
 	drop table cartao;
